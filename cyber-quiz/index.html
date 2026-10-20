@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cybersecurity Quiz</title>
+<style>
+:root {
+  --color-fg: #1f1d1a; --color-fg-muted: #5f5a52; --color-bg: #ffffff; --color-panel: #f7f5f1; --color-border-line: #e2ddd4;
+  --color-ok: #1a7f4e; --color-bad: #c0392b; --color-warn: #b7791f;
+  --cds-chart-grid: #e8e4dc;
+  --font-anthropic-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+  --font-anthropic-serif: Georgia, 'Times New Roman', serif;
+  --cds-font-size-caption: 0.8125rem; --cds-font-size-body: 0.9375rem; --cds-font-size-heading: 1.125rem; --cds-font-size-title: 1.75rem;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 12px; --cds-gap-lg: 20px; --cds-gap-xl: 28px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-pad-xl: 24px;
+  --cds-radius: 10px; --cds-dur-slow: 320ms; --cds-ease-out: cubic-bezier(.2,.8,.2,1);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --color-fg: #f1ede6; --color-fg-muted: #b3ab9f; --color-bg: #1b1a18; --color-panel: #262421; --color-border-line: #3a3733;
+    --color-ok: #4cc38a; --color-bad: #f07167; --cds-chart-grid: #3a3733; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); }
+.cy-shell { padding: 16px; }
+@media (min-width: 700px) { .cy-shell { padding: 28px; } }
+.cy-name-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: var(--cds-font-size-body); font-weight: 600; margin-top: 4px; }
+.cy-name-row input { font: inherit; font-weight: 400; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); min-width: 0; flex: 1 1 12rem; max-width: 20rem; }
+.cy-save-note { font-size: var(--cds-font-size-caption) !important; }
+.cy-share { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+a.cy-btn { text-decoration: none; display: inline-flex; align-items: center; }
+.cy-wa { background: #1f9d55 !important; border-color: #1f9d55 !important; color: #fff !important; }
+@media (max-width: 420px) { .cy-opts { gap: 6px !important; } .cy-opt { padding: 10px !important; font-size: 0.875rem !important; } .cy-key { width: 1.6rem !important; height: 1.6rem !important; } }
+
+.cy-page { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: flex; flex-direction: column; gap: var(--cds-gap-lg); max-width: 62rem; margin-inline: auto; --pc: #2f6fd6;
+  --c1: #2f6fd6; --c2: #e07a1f; --c3: #1f9d74; --c4: #c9a227; --c5: #8a4fd1; --c6: #d14f7a; --c7: #1aa3b8; --c8: #7a8a1f; }
+.cy-tint { background: color-mix(in srgb, var(--pc) 14%, var(--color-panel)); border: 1px solid color-mix(in srgb, var(--pc) 45%, var(--color-border-line)); }
+
+.cy-hero { position: relative; overflow: hidden; border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl); display: flex; flex-direction: column; gap: var(--cds-gap-sm);
+  background: linear-gradient(120deg, color-mix(in srgb, var(--c1) 30%, var(--color-panel)) 0%, color-mix(in srgb, var(--c5) 26%, var(--color-panel)) 50%, color-mix(in srgb, var(--c7) 28%, var(--color-panel)) 100%);
+  border: 1px solid var(--color-border-line); }
+.cy-hero h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; line-height: 1.15; }
+.cy-hero p { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+.cy-hero-emojis { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); font-size: 1.4rem; }
+.cy-hero-emojis span { display: inline-flex; width: 2.4rem; height: 2.4rem; align-items: center; justify-content: center; border-radius: 50%; background: color-mix(in srgb, var(--color-bg) 70%, transparent); }
+
+.cy-def { background: #e9d8bd; color: #2b2118; border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); border-left: 8px solid #b08a5a; }
+.cy-def-label { font-size: var(--cds-font-size-caption); font-weight: 700; letter-spacing: .08em; color: #6b4a26; text-transform: uppercase; }
+.cy-def-text { font-size: var(--cds-font-size-body); line-height: 1.6; margin: 0; }
+.cy-page .cy-def b { color: #2b2118; }
+
+.cy-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: var(--cds-gap-md); }
+.cy-tile { border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.cy-tile-top { display: flex; align-items: center; gap: var(--cds-gap-sm); }
+.cy-tile-icon { font-size: 1.3rem; }
+.cy-tile-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.cy-tile-num { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; min-height: 1.2em; color: var(--pc); }
+
+.cy-section-title { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.cy-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--cds-gap-sm); }
+.cy-chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); min-height: 2.5rem; }
+.cy-chip { font: inherit; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: 999px; color: var(--color-fg); font-size: var(--cds-font-size-caption); }
+.cy-chip.is-on { border-width: 2px; border-color: var(--pc); background: color-mix(in srgb, var(--pc) 30%, var(--color-panel)); font-weight: 700; }
+.cy-chip-sub { color: var(--color-fg-muted); font-weight: 400; }
+.cy-toggle { font: inherit; font-size: var(--cds-font-size-caption); cursor: pointer; padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); }
+.cy-toggle.is-on { border-color: var(--c2); background: color-mix(in srgb, var(--c2) 22%, var(--color-panel)); font-weight: 700; }
+
+.cy-quiz { position: relative; overflow: hidden; background: var(--color-panel); border: 1px solid var(--color-border-line); border-top: 8px solid var(--pc); border-radius: calc(var(--cds-radius) * 2); padding: var(--cds-pad-xl); display: flex; flex-direction: column; gap: var(--cds-gap-md); min-height: 26rem;
+  background-image: radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--pc) 14%, transparent) 0, transparent 16rem); }
+.cy-quiz-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.cy-count { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--color-fg); }
+.cy-tags { display: flex; gap: var(--cds-gap-sm); align-items: center; flex-wrap: wrap; }
+.cy-tag { display: inline-flex; gap: 4px; align-items: center; background: color-mix(in srgb, var(--pc) 26%, var(--color-panel)); color: var(--color-fg); border: 1px solid var(--pc); border-radius: 999px; padding: 2px 10px; font-weight: 700; }
+.cy-bar { height: 10px; border-radius: 999px; background: var(--cds-chart-grid); overflow: hidden; }
+.cy-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--c1), var(--c5), var(--c7)); width: 0; transition: width var(--cds-dur-slow) var(--cds-ease-out); }
+.cy-question { margin: var(--cds-gap-sm) 0 0; font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.3; padding: var(--cds-pad-sm) var(--cds-pad-md); border-left: 5px solid var(--pc); background: color-mix(in srgb, var(--pc) 8%, transparent); border-radius: 0 var(--cds-radius) var(--cds-radius) 0; }
+.cy-opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--cds-gap-sm); }
+.cy-opt { --oc: var(--c1); font: inherit; font-size: var(--cds-font-size-body); text-align: left; cursor: pointer; display: flex; gap: var(--cds-gap-sm); align-items: center; padding: var(--cds-pad-md); border-radius: var(--cds-radius); border: 1px solid color-mix(in srgb, var(--oc) 40%, var(--color-border-line)); background: color-mix(in srgb, var(--oc) 7%, var(--color-bg)); color: var(--color-fg); min-height: 4.2rem; transition: transform var(--cds-dur-slow) var(--cds-ease-out); overflow-wrap: anywhere; }
+.cy-opt:hover:not([disabled]) { transform: translateY(-2px); border-color: var(--oc); background: color-mix(in srgb, var(--oc) 16%, var(--color-bg)); }
+.cy-opt[disabled] { cursor: default; opacity: .75; }
+.cy-key { flex: none; width: 2rem; height: 2rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: var(--cds-font-size-body); background: var(--oc); color: var(--color-bg); }
+.cy-page .is-correct { opacity: 1 !important; border-color: var(--color-ok) !important; background: color-mix(in srgb, var(--color-ok) 18%, var(--color-bg)) !important; font-weight: 700; }
+.cy-page .is-correct .cy-key { background: var(--color-ok); }
+.cy-page .is-picked-wrong { opacity: 1 !important; border-color: var(--color-bad) !important; background: color-mix(in srgb, var(--color-bad) 16%, var(--color-bg)) !important; }
+.cy-page .is-picked-wrong .cy-key { background: var(--color-bad); }
+.cy-hint { border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); background: color-mix(in srgb, var(--c4) 16%, var(--color-bg)); border: 1px dashed var(--c4); font-size: var(--cds-font-size-body); }
+.cy-hint p { margin: 0; line-height: 1.5; }
+.cy-feedback { border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.cy-feedback.ok { border: 2px solid var(--color-ok); background: color-mix(in srgb, var(--color-ok) 10%, var(--color-bg)); }
+.cy-feedback.bad { border: 2px solid var(--color-bad); background: color-mix(in srgb, var(--color-bad) 8%, var(--color-bg)); }
+.cy-verdict { margin: 0; font-weight: 800; font-size: var(--cds-font-size-heading); }
+.cy-feedback.ok .cy-verdict { color: var(--color-ok); }
+.cy-feedback.bad .cy-verdict { color: var(--color-bad); }
+.cy-ex { margin: 0; font-size: var(--cds-font-size-body); line-height: 1.5; }
+.cy-nav { display: flex; justify-content: space-between; align-items: center; gap: var(--cds-gap-sm); margin-top: auto; flex-wrap: wrap; }
+.cy-btn { font: inherit; font-size: var(--cds-font-size-body); padding: var(--cds-pad-sm) var(--cds-pad-lg); border-radius: 999px; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); cursor: pointer; }
+.cy-btn:hover:not([disabled]) { border-color: var(--color-fg-muted); }
+.cy-btn[disabled] { opacity: .4; cursor: default; }
+.cy-btn.primary { background: var(--pc); color: var(--color-bg); border-color: var(--pc); font-weight: 700; }
+.cy-btn.soft { font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-md); border-color: var(--c4); background: color-mix(in srgb, var(--c4) 12%, var(--color-bg)); }
+.cy-keys { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+
+.cy-badge { align-self: flex-start; display: inline-flex; align-items: center; gap: var(--cds-gap-sm); padding: var(--cds-pad-sm) var(--cds-pad-lg); border-radius: 999px; font-weight: 800; font-size: var(--cds-font-size-heading);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c1) 30%, var(--color-panel)), color-mix(in srgb, var(--c7) 30%, var(--color-panel))); border: 1px solid var(--color-border-line); }
+.cy-result-num { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+.cy-muted { margin: 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+.cy-breakdown { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-sm); }
+.cy-bd { border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); display: flex; flex-direction: column; gap: 6px; font-size: var(--cds-font-size-body); }
+.cy-bd-row { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); }
+.cy-bd-row span:last-child { font-variant-numeric: tabular-nums; font-weight: 700; }
+.cy-bd-bar { height: 8px; border-radius: 999px; background: var(--cds-chart-grid); overflow: hidden; }
+.cy-bd-bar div { height: 100%; border-radius: 999px; background: var(--pc); }
+.cy-review { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.cy-review-item { border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: flex; flex-direction: column; gap: 4px; background: var(--color-bg); border: 1px solid var(--color-border-line); border-left: 5px solid var(--pc); }
+.cy-review-q { margin: 0; font-weight: 700; font-size: var(--cds-font-size-body); line-height: 1.4; }
+.cy-review-line { margin: 0; font-size: var(--cds-font-size-caption); line-height: 1.5; }
+.cy-review-line .bad { color: var(--color-bad); font-weight: 700; }
+.cy-review-line .ok { color: var(--color-ok); font-weight: 700; }
+.cy-lvl-tag { display: inline-flex; gap: 4px; align-items: center; border-radius: 999px; padding: 2px 10px; font-weight: 700; border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); }
+.cy-empty { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-sm); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-height: 20rem; }
+.cy-dot { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+.cy-burst { position: absolute; left: 50%; top: 45%; width: 0; height: 0; pointer-events: none; }
+.cy-burst span { position: absolute; font-size: 1.5rem; opacity: 0; }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+@media (prefers-reduced-motion: no-preference) {
+  .cy-quiz-body { animation: cy-in var(--cds-dur-slow) var(--cds-ease-out); }
+  @keyframes cy-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .cy-feedback.ok .cy-verdict { animation: cy-pop .5s var(--cds-ease-out); }
+  @keyframes cy-pop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  .cy-burst span { animation: cy-fly 1s var(--cds-ease-out) forwards; }
+  @keyframes cy-fly { 0% { opacity: 1; transform: translate(0, 0) scale(.6); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(30deg); } }
+  .cy-badge { animation: cy-pop .7s var(--cds-ease-out); }
+}
+</style>
+</head>
+<body>
+<div class="cy-shell">
+
+<div class="cy-page" data-page="cybersecurity-quiz">
+  <header class="cy-hero" id="cy-top">
+    <div class="cy-hero-emojis" aria-hidden="true"><span>🛡️</span><span>🕵️</span><span>⚖️</span><span>💥</span><span>🧱</span><span>🎓</span></div>
+    <h1>Cybersecurity Quiz</h1>
+    <p id="cy-takeaway">The Digital Fortress: one question at a time</p>
+    <label class="cy-name-row">👤 Your name <input id="cy-name" type="text" maxlength="40" placeholder="Type your name" autocomplete="name"></label>
+    <p class="cy-save-note">Your progress is saved on this device automatically.</p>
+  </header>
+
+  <section class="cy-def" id="cy-definition">
+    <span class="cy-def-label">Definition</span>
+    <p class="cy-def-text"><b>Cybersecurity</b> is the practice of protecting systems, networks and programs from digital attacks that try to access, change or destroy sensitive information, extort money, or interrupt normal business. Think of a fortress: walls (technology), guards (people) and rules (processes) work together.</p>
+  </section>
+
+  <section class="cy-tiles" id="cy-score">
+    <div class="cy-tile cy-tint" data-c="c1"><div class="cy-tile-top"><span class="cy-tile-icon" aria-hidden="true">📚</span><span class="cy-tile-label">Questions</span></div><span class="cy-tile-num dash-skeleton" id="cy-total" data-source="total" data-field="n" data-row="0">—</span></div>
+    <div class="cy-tile cy-tint" data-c="c2"><div class="cy-tile-top"><span class="cy-tile-icon" aria-hidden="true">✍️</span><span class="cy-tile-label">Attempted</span></div><span class="cy-tile-num" id="cy-attempted">0</span></div>
+    <div class="cy-tile cy-tint" data-c="c3"><div class="cy-tile-top"><span class="cy-tile-icon" aria-hidden="true">✅</span><span class="cy-tile-label">Correct</span></div><span class="cy-tile-num" id="cy-correct">0</span></div>
+    <div class="cy-tile cy-tint" data-c="c6"><div class="cy-tile-top"><span class="cy-tile-icon" aria-hidden="true">🏆</span><span class="cy-tile-label" id="cy-pct-label">Score</span></div><span class="cy-tile-num" id="cy-pct">—</span></div>
+  </section>
+
+  <section id="cy-topics" style="display:flex;flex-direction:column;gap:var(--cds-gap-sm)">
+    <div class="cy-row">
+      <h2 class="cy-section-title">Choose a section</h2>
+      <button type="button" class="cy-toggle" id="cy-shuffle">🔀 Shuffle questions: off</button>
+    </div>
+    <div class="cy-chips" id="cy-chips"></div>
+    <h2 class="cy-section-title" style="margin-top:var(--cds-gap-sm)">Choose a level</h2>
+    <div class="cy-chips" id="cy-levels"></div>
+  </section>
+
+  <section class="cy-quiz" id="cy-quiz"></section>
+</div>
+
+</div>
+<script>
+(function () {
+  var DATA = { questions: [{"id": "F1", "order": 1, "topic": 1, "section": "Foundations", "level": "Easy", "question": "A company trains its staff, writes security rules and installs firewalls. Which three elements of cybersecurity is it covering?", "options": "People, processes and technology|Hardware, software and networks|Users, servers and backups|Policies, audits and fines", "answer": "People, processes and technology", "hint": "Think: who uses it, how it is done, and which tools are used.", "explanation": "Training covers people, rules are processes, and firewalls are technology. The PDF says cybersecurity is the synergy of all three.", "page": 4}, {"id": "F2", "order": 2, "topic": 1, "section": "Foundations", "level": "Medium", "question": "After a ransomware attack is contained, the IT team rebuilds servers from clean backups and writes a lessons-learned report. Which lifecycle stage is this?", "options": "Recovery|Response|Detection|Prevention", "answer": "Recovery", "hint": "The attack is already contained. Now the goal is getting back to normal.", "explanation": "Recovery restores systems to a known-good state and uses lessons from the incident to strengthen future defense.", "page": 6}, {"id": "F3", "order": 3, "topic": 1, "section": "Foundations", "level": "Medium", "question": "At 2 a.m. a monitoring tool raises an alert about a login from an unknown country. Which lifecycle stage is working?", "options": "Detection|Prevention|Response|Recovery", "answer": "Detection", "hint": "Nothing has been stopped or fixed yet. Something was only noticed.", "explanation": "Detection identifies unauthorized activity in real time using monitoring tools. Response would be the action taken next.", "page": 6}, {"id": "F4", "order": 4, "topic": 1, "section": "Foundations", "level": "Easy", "question": "Customer records sit in a database overnight and nobody opens them. What state is this data in?", "options": "Data at rest|Data in transit|Data in process|Data in backup", "answer": "Data at rest", "hint": "Is the data moving, being used, or just stored?", "explanation": "Data at rest is stored and not being accessed. It is protected with AES-256 encryption, ACLs and physical security.", "page": 11}, {"id": "F5", "order": 5, "topic": 1, "section": "Foundations", "level": "Medium", "question": "An employee sends a confidential file over hotel Wi-Fi. Which protection fits this data state best?", "options": "A VPN with TLS encryption|AES-256 disk encryption|A secure memory enclave|A locked server room", "answer": "A VPN with TLS encryption", "hint": "The data is travelling across a network.", "explanation": "Data in transit is protected with TLS/SSL, VPNs, IPsec and end-to-end encryption. Disk encryption protects data at rest.", "page": 11}, {"id": "F6", "order": 6, "topic": 1, "section": "Foundations", "level": "Easy", "question": "Only HR staff and direct managers can see employee salaries. Which CIA pillar is this?", "options": "Confidentiality|Integrity|Availability|Non-repudiation", "answer": "Confidentiality", "hint": "The question is about who is allowed to see the data.", "explanation": "Confidentiality means sensitive information is accessible only to people who are authorized to see it.", "page": 12}, {"id": "F7", "order": 7, "topic": 1, "section": "Foundations", "level": "Medium", "question": "A bank compares hash values to make sure a transfer amount was not changed on the way. Which pillar is protected?", "options": "Integrity|Confidentiality|Availability|Accountability", "answer": "Integrity", "hint": "The worry is the data being changed, not being seen.", "explanation": "Integrity keeps data accurate and unchanged. A hash is a digital fingerprint that reveals any change.", "page": 13}, {"id": "F8", "order": 8, "topic": 1, "section": "Foundations", "level": "Easy", "question": "An online store adds extra servers so its website stays up during a Black Friday rush. Which pillar is this?", "options": "Availability|Integrity|Confidentiality|Privacy", "answer": "Availability", "hint": "Is the system ready when users need it?", "explanation": "Availability means systems are ready for authorized users when needed. Redundancy, backups and DDoS protection support it.", "page": 14}, {"id": "F9", "order": 9, "topic": 1, "section": "Foundations", "level": "Hard", "question": "Which of these is NOT one of the three dimensions of the McCumber Cube?", "options": "Threat actors|Security goals|Information states|Safeguards", "answer": "Threat actors", "hint": "The cube covers goals (CIA), where data lives, and how we protect it.", "explanation": "The McCumber Cube has three dimensions: security goals, information states and safeguards. Threat actors are not one of them.", "page": 15}, {"id": "F10", "order": 10, "topic": 1, "section": "Foundations", "level": "Hard", "question": "In the McCumber Cube, 'Education & Training' belongs to which dimension?", "options": "Safeguards|Security goals|Information states|Threat sources", "answer": "Safeguards", "hint": "It is one way we protect information, along with policy and technology.", "explanation": "Safeguards are Policy & Practices, Education & Training, and Technology.", "page": 15}, {"id": "H1", "order": 11, "topic": 2, "section": "Hacking & Kill Chain", "level": "Easy", "question": "Before attacking, a hacker studies the company's LinkedIn pages and runs WHOIS lookups. Which phase is this?", "options": "Reconnaissance|Scanning|Gaining access|Clearing tracks", "answer": "Reconnaissance", "hint": "Nothing on the network has been touched yet. It is only information gathering.", "explanation": "Reconnaissance gathers as much information as possible about the target, often with OSINT, social media and WHOIS/DNS lookups.", "page": 17}, {"id": "H2", "order": 12, "topic": 2, "section": "Hacking & Kill Chain", "level": "Medium", "question": "The attacker now runs Nmap to find open ports and running services. Which phase is this?", "options": "Scanning|Reconnaissance|Gaining access|Maintaining presence", "answer": "Scanning", "hint": "Looking for live systems and entry points on the target network.", "explanation": "Scanning identifies live systems, open ports and services. Nmap and vulnerability scanners like Nessus are common tools.", "page": 17}, {"id": "H3", "order": 13, "topic": 2, "section": "Hacking & Kill Chain", "level": "Medium", "question": "After breaking in, an attacker creates a hidden admin account so they can come back later. Which phase is this?", "options": "Maintaining presence|Gaining access|Clearing tracks|Privilege escalation", "answer": "Maintaining presence", "hint": "The goal is long-term access, even after the hole is patched.", "explanation": "Maintaining presence means installing backdoors or new accounts to keep uninterrupted access.", "page": 18}, {"id": "H4", "order": 14, "topic": 2, "section": "Hacking & Kill Chain", "level": "Medium", "question": "Before leaving, an intruder deletes system logs and hides malicious files. Which phase is this?", "options": "Clearing tracks|Maintaining presence|Gaining access|Reconnaissance", "answer": "Clearing tracks", "hint": "The goal is to stay invisible to security teams and forensic tools.", "explanation": "Clearing tracks is the final phase: removing evidence of the intrusion to avoid detection.", "page": 18}, {"id": "H5", "order": 15, "topic": 2, "section": "Hacking & Kill Chain", "level": "Hard", "question": "What is the correct order of the first three phases of the kill chain?", "options": "Reconnaissance → Scanning → Gaining access|Scanning → Reconnaissance → Gaining access|Gaining access → Scanning → Reconnaissance|Reconnaissance → Gaining access → Scanning", "answer": "Reconnaissance → Scanning → Gaining access", "hint": "You learn about a target before probing it, and probe it before breaking in.", "explanation": "The order is Reconnaissance → Scanning → Gaining access → Maintaining presence → Clearing tracks.", "page": 17}, {"id": "H6", "order": 16, "topic": 2, "section": "Hacking & Kill Chain", "level": "Easy", "question": "According to the PDF, hacking itself is best described as:", "options": "A technical skill, not a moral judgment|A crime in every single situation|Only guessing other people's passwords|A hobby that needs no technical skill", "answer": "A technical skill, not a moral judgment", "hint": "Whether it is good or bad depends on how the skill is used.", "explanation": "Hacking is identifying and exploiting weaknesses. The PDF calls it a technical skill, not a moral judgment.", "page": 16}, {"id": "H7", "order": 17, "topic": 2, "section": "Hacking & Kill Chain", "level": "Medium", "question": "An attacker links a phishing foothold, a weak service and a privilege bug to reach the main server. This is called:", "options": "Daisy chaining|Credential stuffing|Footprinting|Spoofing", "answer": "Daisy chaining", "hint": "Several exploits joined one after another.", "explanation": "Daisy chaining links multiple exploits to gain deeper access or escalate privileges.", "page": 10}, {"id": "H8", "order": 18, "topic": 2, "section": "Hacking & Kill Chain", "level": "Medium", "question": "Attackers use a flaw that the software vendor does not know about and has no patch for. This is a:", "options": "Zero-day attack|Replay attack|Brute-force attack|Spoofing attack", "answer": "Zero-day attack", "hint": "The vendor has had 'zero days' to fix it.", "explanation": "A zero-day attack exploits a flaw before the vendor knows about it or has released a patch.", "page": 10}, {"id": "H9", "order": 19, "topic": 2, "section": "Hacking & Kill Chain", "level": "Hard", "question": "In a ransomware infection, the part of the malware that actually encrypts the files is called the:", "options": "Payload|Exploit|Backdoor|Vulnerability", "answer": "Payload", "hint": "It is the component that performs the harmful action.", "explanation": "The payload is the malicious component of malware that does the damage, such as encrypting files.", "page": 10}, {"id": "R1", "order": 20, "topic": 3, "section": "Risk & Threats", "level": "Easy", "question": "In the PDF's house analogy, an open window represents a:", "options": "Vulnerability|Exploit|Threat|Countermeasure", "answer": "Vulnerability", "hint": "A weakness that someone could use to get in.", "explanation": "A vulnerability is a weakness in a system that a threat actor can exploit.", "page": 9}, {"id": "R2", "order": 21, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "In the same analogy, the ladder used to climb in through the window is the:", "options": "Exploit|Vulnerability|Threat|Risk", "answer": "Exploit", "hint": "The tool or technique that takes advantage of the weakness.", "explanation": "An exploit is the tool or technique used to take advantage of a vulnerability. The burglar is the threat.", "page": 9}, {"id": "R3", "order": 22, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "Which formula does the PDF use to calculate risk?", "options": "Threat × Vulnerability × Impact|Threat + Vulnerability + Impact|Asset value × Attack cost|Vulnerability ÷ Threat × Cost", "answer": "Threat × Vulnerability × Impact", "hint": "Multiply three things: who attacks, the weakness, and the damage.", "explanation": "Risk = Threat × Vulnerability × Impact.", "page": 22}, {"id": "R4", "order": 23, "topic": 3, "section": "Risk & Threats", "level": "Hard", "question": "A system has a serious vulnerability, but no threat can ever reach it. Using the risk formula, its risk is:", "options": "Very low, because threat is near zero|Very high, because the flaw is serious|Equal to the impact of the flaw alone|Impossible to judge without a CVSS score", "answer": "Very low, because threat is near zero", "hint": "In a multiplication, if one factor is close to zero, so is the result.", "explanation": "Risk = Threat × Vulnerability × Impact. If the threat is near zero, the product (the risk) is near zero too.", "page": 22}, {"id": "R5", "order": 24, "topic": 3, "section": "Risk & Threats", "level": "Easy", "question": "A group defaces a government website to protest a new law. This group is most likely:", "options": "Hacktivists|Cybercriminals|Malicious insiders|State-sponsored actors", "answer": "Hacktivists", "hint": "Their motive is political or social, not money.", "explanation": "Hacktivists are motivated by political or social causes and often use DDoS or defacement.", "page": 21}, {"id": "R6", "order": 25, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "Which of these is a non-intentional threat?", "options": "A flood in the data center|A disgruntled employee|A hacktivist DDoS attack|A ransomware gang", "answer": "A flood in the data center", "hint": "Nobody planned it to cause harm.", "explanation": "Environmental hazards like floods, fires and power outages are non-intentional threats.", "page": 21}, {"id": "R7", "order": 26, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "An employee accidentally emails the full customer list to the wrong person. Which type of threat is this?", "options": "Human error|Malicious insider|Hacktivism|Hardware failure", "answer": "Human error", "hint": "There was no bad intent. It was a mistake.", "explanation": "Human error, such as misdirected emails or misconfigurations, is a non-intentional threat. A malicious insider acts on purpose.", "page": 21}, {"id": "R8", "order": 27, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "The security team ranks 200 found vulnerabilities by CVSS score so the worst are fixed first. Which step is this?", "options": "Prioritization|Identification|Analysis|Remediation", "answer": "Prioritization", "hint": "Ranking by risk level.", "explanation": "Prioritization ranks vulnerabilities using CVSS scores, business context and threat intelligence.", "page": 20}, {"id": "R9", "order": 28, "topic": 3, "section": "Risk & Threats", "level": "Easy", "question": "A company's patents and source code belong to which asset category?", "options": "Information|People|Property|Infrastructure", "answer": "Information", "hint": "Assets are grouped into People, Property and Information.", "explanation": "Proprietary data, intellectual property and financial records are Information assets.", "page": 19}, {"id": "R10", "order": 29, "topic": 3, "section": "Risk & Threats", "level": "Medium", "question": "Someone finds a gamer's home address and posts it online to harass them. This is:", "options": "Doxing|Spoofing|Sniffing|Phishing", "answer": "Doxing", "hint": "Publishing someone's private, identifying information.", "explanation": "Doxing means searching for and publishing private information about a person with malicious intent.", "page": 10}, {"id": "A1", "order": 30, "topic": 4, "section": "Attacks & Malware", "level": "Easy", "question": "An attacker quietly records network traffic without changing anything. This is a:", "options": "Passive attack|Active attack|Physical attack|Insider attack", "answer": "Passive attack", "hint": "Only watching, no changes.", "explanation": "Passive attacks gather information without affecting system resources, such as eavesdropping and traffic analysis.", "page": 25}, {"id": "A2", "order": 31, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "Why are passive attacks hard to detect?", "options": "They do not modify any data|They always use strong encryption|They only happen outside office hours|They need physical access to servers", "answer": "They do not modify any data", "hint": "Nothing on the system changes.", "explanation": "Because passive attacks do not modify data, there is little evidence to notice. Active attacks are easier to detect but more damaging.", "page": 25}, {"id": "A3", "order": 32, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "On public Wi-Fi, an attacker sits between a user and their bank, reading and changing messages. This is:", "options": "Man-in-the-Middle|Packet sniffing|Buffer overflow|Identity spoofing", "answer": "Man-in-the-Middle", "hint": "The attacker relays the conversation between two parties.", "explanation": "In a Man-in-the-Middle attack the attacker secretly relays and may alter communication. Defenses: end-to-end encryption, VPNs, digital certificates.", "page": 26}, {"id": "A4", "order": 33, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "A login box passes ' OR 1=1 -- straight into a database query. Which attack is this, and what is the key defense?", "options": "SQL injection; parameterized queries|Cross-site scripting; a CSP header|Buffer overflow; bounds checking|Spoofing; SPF and DKIM records", "answer": "SQL injection; parameterized queries", "hint": "The typed input is changing a database query.", "explanation": "SQL injection inserts SQL code into input fields. Parameterized queries and input validation stop input from running as code.", "page": 27}, {"id": "A5", "order": 34, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "A forum comment contains a script that steals other visitors' session cookies when they view it. This is:", "options": "Cross-site scripting|SQL injection attack|Packet sniffing|Identity spoofing", "answer": "Cross-site scripting", "hint": "The malicious script runs in the victim's browser.", "explanation": "Cross-site scripting (XSS) injects scripts into trusted websites. Defenses are Content Security Policy and escaping output.", "page": 27}, {"id": "A6", "order": 35, "topic": 4, "section": "Attacks & Malware", "level": "Easy", "question": "Which malware spreads across a network by itself, without anyone opening a file?", "options": "Worm|Virus|Trojan|Spyware", "answer": "Worm", "hint": "Self-replicating and autonomous.", "explanation": "A worm is standalone malware that copies itself to other computers without human help.", "page": 29}, {"id": "A7", "order": 36, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "A free 'PDF converter' download secretly opens a backdoor but never copies itself. It is a:", "options": "Trojan|Worm|Virus|Ransomware", "answer": "Trojan", "hint": "It relies on looking legitimate and does not replicate.", "explanation": "A Trojan is disguised as legitimate software, can create backdoors or steal data, and does not replicate itself.", "page": 29}, {"id": "A8", "order": 37, "topic": 4, "section": "Attacks & Malware", "level": "Hard", "question": "What is the key difference between a virus and a worm?", "options": "A virus needs a host file and human action|A worm needs a host file and human action|Only a virus can spread across networks|Only a worm is disguised as real software", "answer": "A virus needs a host file and human action", "hint": "Which one needs a person to open something?", "explanation": "A virus attaches to a host file and needs a human action to spread. A worm spreads on its own.", "page": 29}, {"id": "A9", "order": 38, "topic": 4, "section": "Attacks & Malware", "level": "Easy", "question": "A hospital's files are suddenly encrypted and a note demands Bitcoin for the key. This is:", "options": "Ransomware|Spyware|Rootkit|Cryptojacking", "answer": "Ransomware", "hint": "Encrypt the files, then demand payment.", "explanation": "Ransomware encrypts files and demands a ransom, usually in cryptocurrency, for the decryption key.", "page": 30}, {"id": "A10", "order": 39, "topic": 4, "section": "Attacks & Malware", "level": "Medium", "question": "Riya gets an SMS: 'Your bank account will be blocked in 10 minutes. Click this link.' What is this?", "options": "Smishing|Vishing|Whaling|Spoofing", "answer": "Smishing", "hint": "Phishing that arrives as a text message.", "explanation": "Smishing is SMS phishing. It uses urgency and fear, two classic social-engineering triggers.", "page": 28}, {"id": "A11", "order": 40, "topic": 4, "section": "Attacks & Malware", "level": "Hard", "question": "An employee gets a video call from someone who looks and sounds exactly like the CEO, asking for an urgent fund transfer. Which threat is this?", "options": "Deepfake CEO fraud|Quantum code-breaking|Buffer overflow|Packet sniffing", "answer": "Deepfake CEO fraud", "hint": "AI-generated audio or video is used to impersonate a person.", "explanation": "Deepfakes use AI-generated media to impersonate executives (CEO fraud), leading to unauthorized transfers.", "page": 31}, {"id": "A12", "order": 41, "topic": 4, "section": "Attacks & Malware", "level": "Hard", "question": "Why does the PDF say organizations need Post-Quantum Cryptography?", "options": "Quantum computers may break RSA and ECC|AI can now write phishing emails at scale|Deepfakes can copy executives' voices|Rootkits can hide from antivirus tools", "answer": "Quantum computers may break RSA and ECC", "hint": "Which threat attacks today's encryption itself?", "explanation": "Quantum computers could break current encryption standards like RSA and ECC, so organizations must move to Post-Quantum Cryptography.", "page": 31}, {"id": "D1", "order": 42, "topic": 5, "section": "Defense & Controls", "level": "Easy", "question": "Locks, CCTV cameras and fingerprint scanners at a data center are which type of control?", "options": "Physical|Technical|Administrative|Corrective", "answer": "Physical", "hint": "Real-world barriers you can touch.", "explanation": "Physical controls protect people, hardware and facilities: locks, cameras, guards, biometrics and fencing.", "page": 32}, {"id": "D2", "order": 43, "topic": 5, "section": "Defense & Controls", "level": "Easy", "question": "An Acceptable Use Policy and yearly security training are which type of control?", "options": "Administrative|Technical|Physical|Environmental", "answer": "Administrative", "hint": "Management and policy, not hardware.", "explanation": "Administrative controls are the policy framework: policies, procedures, training and risk assessments.", "page": 33}, {"id": "D3", "order": 44, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "An IDS sends an alert when someone starts scanning the network. What kind of control is the IDS?", "options": "Detective|Preventive|Physical|Corrective", "answer": "Detective", "hint": "It notices and alerts; it does not block.", "explanation": "Detective controls identify and alert when an unauthorized action has happened or is in progress, like IDS and SIEM.", "page": 35}, {"id": "D4", "order": 45, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "A firewall rule blocks all traffic to an unused port before anyone can connect. What kind of control is this?", "options": "Preventive|Detective|Recovery|Corrective", "answer": "Preventive", "hint": "It stops the action before it happens.", "explanation": "Preventive controls stop unauthorized actions in the first place, like firewalls, ACLs, encryption and MFA.", "page": 35}, {"id": "D5", "order": 46, "topic": 5, "section": "Defense & Controls", "level": "Easy", "question": "What is the core principle of the Zero Trust model?", "options": "Never trust, always verify|Trust, but verify later|Trust every internal user|Verify once, then trust", "answer": "Never trust, always verify", "hint": "Every person and device is checked, every time.", "explanation": "Zero Trust requires strict identity verification for every person and device, with least-privilege access.", "page": 36}, {"id": "D6", "order": 47, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "The IT team tests and installs a Windows update that fixes a known vulnerability. This is:", "options": "Patch management|Continuous auditing|Penetration testing|Micro-segmentation", "answer": "Patch management", "hint": "A systematic process for software updates.", "explanation": "Patch management identifies, tests and installs updates to fix vulnerabilities.", "page": 36}, {"id": "D7", "order": 48, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "Which MFA choice does the PDF recommend?", "options": "An authenticator app|SMS codes only|MFA on email only|One shared MFA code", "answer": "An authenticator app", "hint": "The PDF says to avoid SMS-based MFA.", "explanation": "Use authenticator apps, avoid SMS-based MFA, and enable MFA on all accounts.", "page": 37}, {"id": "D8", "order": 49, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "Which tool sits in front of a web application and filters SQL injection and XSS attempts?", "options": "Web Application Firewall|Virtual Private Network|Hardware redundancy|Single Sign-On portal", "answer": "Web Application Firewall", "hint": "A firewall built specially for web applications.", "explanation": "A Web Application Firewall (WAF) filters malicious web traffic. Secure SDLC and penetration testing also support application security.", "page": 24}, {"id": "D9", "order": 50, "topic": 5, "section": "Defense & Controls", "level": "Hard", "question": "A company uses policies, firewalls, encryption and guards together, so if one fails another still protects it. This is:", "options": "Defense in Depth|Single Sign-On|Least privilege|Daisy chaining", "answer": "Defense in Depth", "hint": "Many layers of controls stacked together.", "explanation": "Defense in Depth uses multiple layers (administrative, technical and physical) to protect assets.", "page": 45}, {"id": "D10", "order": 51, "topic": 5, "section": "Defense & Controls", "level": "Easy", "question": "Which of these is good password hygiene?", "options": "Unique passphrases in a password manager|One strong password for every account|Short passwords changed every single day|Passwords saved in a phone notes app", "answer": "Unique passphrases in a password manager", "hint": "The PDF says: never reuse passwords.", "explanation": "Use complex passphrases, never reuse passwords, and keep them in a password manager.", "page": 37}, {"id": "D11", "order": 52, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "Role-Based Access Control (RBAC) and Single Sign-On (SSO) are part of which security layer?", "options": "Identity & Access Management|Physical security controls|Data backup and recovery|Network vulnerability scanning", "answer": "Identity & Access Management", "hint": "Making sure only authorized users reach resources.", "explanation": "IAM ensures only authorized users access resources, using MFA, RBAC and SSO. The PDF calls it the first line of defense.", "page": 24}, {"id": "D12", "order": 53, "topic": 5, "section": "Defense & Controls", "level": "Medium", "question": "Antivirus, EDR and mobile device management protect which layer?", "options": "Endpoint security|Network security|Cloud security|Physical security", "answer": "Endpoint security", "hint": "Laptops, phones and other user devices.", "explanation": "Endpoint security protects user devices with antivirus/EDR, patch management and mobile device management.", "page": 23}, {"id": "D13", "order": 54, "topic": 5, "section": "Defense & Controls", "level": "Hard", "question": "Regular phishing simulations for staff fall under which management control area?", "options": "Education & Training|Compliance & Audits|Governance & Policy|Incident Response", "answer": "Education & Training", "hint": "It is about teaching people, not writing rules or checking them.", "explanation": "Education & Training includes security awareness, phishing simulations and specialized tech training.", "page": 33}, {"id": "E1", "order": 55, "topic": 6, "section": "Ethics & Careers", "level": "Easy", "question": "Before an ethical hacker tests a company's systems, what must they have?", "options": "Explicit written authorization|A verbal okay from any staff member|A security certificate only|A good reason to run the test", "answer": "Explicit written authorization", "hint": "The rules of engagement start with permission in writing.", "explanation": "Ethical hacking needs explicit written authorization, a defined scope and immediate reporting of critical flaws.", "page": 41}, {"id": "E2", "order": 56, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "An ethical hacker finds a flaw and privately reports it to the company so it can be fixed. This is:", "options": "Responsible disclosure|Public exploit release|Daisy chaining|Clearing tracks", "answer": "Responsible disclosure", "hint": "Report it the right way, to the right people.", "explanation": "Responsible disclosure is a core principle of ethical hackers, together with legal authorization and respect for privacy.", "page": 38}, {"id": "E3", "order": 57, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "Which role reconstructs what happened after an attack, often to present evidence in court?", "options": "Digital forensics|Penetration testing|GRC specialist|Security architect", "answer": "Digital forensics", "hint": "Evidence collection and data recovery.", "explanation": "Digital forensics uncovers and interprets electronic data to reconstruct past events, often for legal purposes.", "page": 43}, {"id": "E4", "order": 58, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "Which role makes sure a company follows GDPR and ISO 27001?", "options": "GRC specialist|Security architect|Penetration tester|Incident responder", "answer": "GRC specialist", "hint": "Governance, Risk and Compliance.", "explanation": "A GRC specialist ensures the organization meets legal requirements and follows its security policies.", "page": 44}, {"id": "E5", "order": 59, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "During a live breach, which role contains and removes the threat to limit damage?", "options": "Incident response|Digital forensics|GRC specialist|Security architect", "answer": "Incident response", "hint": "Containment, eradication and post-incident review.", "explanation": "Incident response manages the aftermath of a breach to limit damage and recovery time.", "page": 43}, {"id": "E6", "order": 60, "topic": 6, "section": "Ethics & Careers", "level": "Easy", "question": "Hack The Box and TryHackMe are examples of:", "options": "Hands-on practice labs|Security certifications|Data privacy laws|Vulnerability scanners", "answer": "Hands-on practice labs", "hint": "Places to practise skills safely.", "explanation": "Hack The Box, TryHackMe and home labs give hands-on practice. Security+, CEH and CISSP are certifications.", "page": 42}, {"id": "E7", "order": 61, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "Which US law covers unauthorized access to computers?", "options": "CFAA|GDPR|HIPAA|ISO 27001", "answer": "CFAA", "hint": "Computer Fraud and Abuse Act.", "explanation": "The CFAA covers unauthorized computer access in the US. GDPR is EU data protection; HIPAA protects health data.", "page": 41}, {"id": "E8", "order": 62, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "Explaining a technical risk to managers in business terms is which soft skill?", "options": "Communication|Analytical thinking|Ethics & integrity|Scripting", "answer": "Communication", "hint": "Translating tech into business impact.", "explanation": "Communication means translating technical risks into business impact and educating employees.", "page": 40}, {"id": "E9", "order": 63, "topic": 6, "section": "Ethics & Careers", "level": "Medium", "question": "Python for security and Bash/PowerShell belong to which core technical skill area?", "options": "Scripting|Networking|OS internals|Cryptography", "answer": "Scripting", "hint": "Automating tasks with code.", "explanation": "The ethical hacker's toolkit has three areas: Networking, OS Internals and Scripting (Python, Bash, PowerShell).", "page": 39}, {"id": "E10", "order": 64, "topic": 6, "section": "Ethics & Careers", "level": "Hard", "question": "Which executive aligns security strategy with business goals and reports to the board?", "options": "Chief Information Security Officer|Security Operations Center analyst|Head of the penetration testing team|Lead digital forensics examiner", "answer": "Chief Information Security Officer", "hint": "The top security leader (CISO).", "explanation": "The CISO provides executive leadership: strategic planning, budgeting and board reporting.", "page": 44}, {"id": "E11", "order": 65, "topic": 6, "section": "Ethics & Careers", "level": "Hard", "question": "'Security by Design' and DevSecOps are key actions of which part of a security culture?", "options": "Operational integration|Leadership commitment|Continuous evolution|Incident review", "answer": "Operational integration", "hint": "Building security into every project from the start.", "explanation": "Operational integration means security is part of every project, process and decision, through Security by Design and DevSecOps.", "page": 46}] };
+  var calcs = {};
+  window.dash = {
+    colors: ['#2f6fd6', '#e07a1f', '#1f9d74', '#c9a227', '#8a4fd1', '#d14f7a', '#1aa3b8', '#7a8a1f'],
+    calc: function (id, o) { calcs[id] = o; },
+    data: function (id) {
+      if (DATA[id]) return { status: 'ok', data: DATA[id] };
+      var c = calcs[id];
+      if (c) { try { return { status: 'ok', data: c.fn.apply(null, c.inputs.map(function (i) { return window.dash.data(i).data; })) }; } catch (e) { return { status: 'error', data: [] }; } }
+      return { status: 'missing', data: [] };
+    },
+    onData: function (fn) { fn(); var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fn, 150); }); },
+    setLink: function () {}
+  };
+  window.d3 = {
+    format: function (spec) {
+      if (spec === ',') return function (n) { return Number(n).toLocaleString('en'); };
+      return function (n) { var v = Math.round(Number(n) * 1000) / 10; return (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(1)) + '%'; };
+    },
+    groups: function (arr, key) {
+      var m = new Map(); arr.forEach(function (x) { var k = key(x); if (!m.has(k)) m.set(k, []); m.get(k).push(x); });
+      return Array.from(m.entries());
+    }
+  };
+})();
+</script>
+<script>
+(function () {
+  dash.calc('per_section', {
+    inputs: ['questions'],
+    title: 'Questions per section',
+    description: 'How many questions each PDF section has, in the PDF order.',
+    fn: (questions) => {
+      const m = new Map();
+      questions.forEach((q) => {
+        if (!m.has(q.section)) m.set(q.section, { section: q.section, topic: Number(q.topic), n: 0 });
+        m.get(q.section).n += 1;
+      });
+      return Array.from(m.values()).sort((a, b) => a.topic - b.topic);
+    }
+  });
+  dash.calc('per_level', {
+    inputs: ['questions'],
+    title: 'Questions per level',
+    description: 'How many questions are Easy, Medium and Hard.',
+    fn: (questions) => ['Easy', 'Medium', 'Hard'].map((level) => ({ level, n: questions.filter((q) => q.level === level).length }))
+  });
+  dash.calc('total', {
+    inputs: ['questions'],
+    title: 'Total questions',
+    description: 'Number of questions in the quiz.',
+    fn: (questions) => [{ n: questions.length }]
+  });
+
+  const page = document.querySelector('.cy-page');
+  const C = dash.colors || [];
+  for (let i = 0; i < 8; i++) if (C[i]) page.style.setProperty('--c' + (i + 1), C[i]);
+  page.querySelectorAll('[data-c]').forEach((e) => e.style.setProperty('--pc', 'var(--' + e.dataset.c + ')'));
+  const EMOJI = { 1: '🛡️', 2: '🕵️', 3: '⚖️', 4: '💥', 5: '🧱', 6: '🎓' };
+  const topicColor = (topic) => 'var(--c' + (((Number(topic) - 1) % 8) + 1) + ')';
+  const LEVEL = { Easy: { icon: '🟢', color: 'var(--c3)' }, Medium: { icon: '🟡', color: 'var(--c4)' }, Hard: { icon: '🔴', color: 'var(--c6)' } };
+
+  const answers = {};
+  const hints = {};
+  let filter = 'all';
+  let level = 'all';
+  const STORE = 'cyberQuiz.v2';
+  let studentName = '';
+  try { const s = JSON.parse(localStorage.getItem(STORE) || '{}'); if (s.answers) Object.assign(answers, s.answers); if (s.name) studentName = String(s.name); } catch (e) {}
+  function save() { try { localStorage.setItem(STORE, JSON.stringify({ answers: answers, name: studentName })); } catch (e) {} }
+  let idx = 0;
+  let retryIds = null;
+  let shuffle = false;
+  let seed = Math.floor(Math.random() * 100000) + 1;
+  let lastKey = '';
+  let burstFor = '';
+  let current = { set: [], byId: new Map() };
+  const $ = (id) => document.getElementById(id);
+  const enc = (v) => encodeURIComponent(String(v));
+
+  function rng(s) { return function () { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hash(str) { let h = 2166136261; for (const c of String(str)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return h; }
+  function shuffled(arr, s) { const a = arr.slice(); const r = rng(s); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function mark(e, source, field, where) { e.setAttribute('data-source', source); if (field) e.setAttribute('data-field', field); if (where) e.setAttribute('data-where', where); return e; }
+  function btn(label, cls, action) { const b = el('button', 'cy-btn' + (cls ? ' ' + cls : ''), label); b.type = 'button'; b.dataset.action = action; return b; }
+  const isRight = (q, a) => !!(q && a && a.v === q.answer);
+
+  function render() {
+    const qd = dash.data('questions');
+    const ps = dash.data('per_section');
+    const tt = dash.data('total');
+    const pl = dash.data('per_level');
+    const rows = qd.status === 'ok' ? qd.data.slice().sort((a, b) => Number(a.order) - Number(b.order)) : [];
+    const byId = new Map(rows.map((r) => [String(r.id), r]));
+
+    $('cy-shuffle').classList.toggle('is-on', shuffle);
+    $('cy-shuffle').textContent = '🔀 Shuffle questions: ' + (shuffle ? 'on' : 'off');
+
+    // tiles
+    const totalEl = $('cy-total');
+    const total = tt.status === 'ok' && tt.data.length ? Number(tt.data[0].n) : 0;
+    if (total) { totalEl.textContent = d3.format(',')(total); totalEl.classList.remove('dash-skeleton'); }
+    else { totalEl.textContent = '—'; totalEl.classList.toggle('dash-skeleton', tt.status === 'loading'); }
+    const att = Object.keys(answers).filter((id) => byId.has(id));
+    const ok = att.filter((id) => isRight(byId.get(id), answers[id]));
+    $('cy-attempted').textContent = att.length;
+    $('cy-correct').textContent = ok.length;
+    const outOf = total || rows.length;
+    $('cy-pct').textContent = outOf ? d3.format('.1~%')(ok.length / outOf) : '—';
+    $('cy-pct-label').textContent = 'Score (' + ok.length + ' / ' + outOf + ')';
+
+    // chips
+    const chips = $('cy-chips');
+    chips.replaceChildren();
+    if (ps.status === 'ok') {
+      const all = el('button', 'cy-chip cy-tint' + (filter === 'all' && !retryIds ? ' is-on' : ''));
+      all.type = 'button'; all.dataset.section = 'all';
+      all.style.setProperty('--pc', 'var(--c2)');
+      all.append(el('span', '', '🌈'), el('span', '', 'All sections'));
+      chips.append(all);
+      ps.data.forEach((s) => {
+        const where = 'section=' + enc(s.section);
+        const c = el('button', 'cy-chip cy-tint' + (filter === s.section && !retryIds ? ' is-on' : ''));
+        c.type = 'button'; c.dataset.section = s.section;
+        c.style.setProperty('--pc', topicColor(s.topic));
+        const sub = el('span', 'cy-chip-sub');
+        sub.append(mark(el('span', '', String(s.n)), 'per_section', 'n', where), document.createTextNode(' Qs'));
+        c.append(el('span', '', EMOJI[s.topic] || '•'), mark(el('span', '', s.section), 'per_section', 'section', where), sub);
+        chips.append(c);
+      });
+    }
+
+    // level chips
+    const lv = $('cy-levels');
+    lv.replaceChildren();
+    if (pl.status === 'ok') {
+      const allL = el('button', 'cy-chip cy-lvl cy-tint' + (level === 'all' ? ' is-on' : ''));
+      allL.type = 'button'; allL.dataset.level = 'all';
+      allL.style.setProperty('--pc', 'var(--c2)');
+      allL.append(el('span', '', '🎯'), el('span', '', 'All levels'));
+      lv.append(allL);
+      pl.data.forEach((r) => {
+        const where = 'level=' + enc(r.level);
+        const c = el('button', 'cy-chip cy-lvl cy-tint' + (level === r.level ? ' is-on' : ''));
+        c.type = 'button'; c.dataset.level = r.level;
+        c.style.setProperty('--pc', (LEVEL[r.level] || {}).color || 'var(--c2)');
+        const sub = el('span', 'cy-chip-sub');
+        sub.append(mark(el('span', '', String(r.n)), 'per_level', 'n', where), document.createTextNode(' Qs'));
+        c.append(el('span', '', (LEVEL[r.level] || {}).icon || '•'), mark(el('span', '', r.level), 'per_level', 'level', where), sub);
+        lv.append(c);
+      });
+    }
+
+    // quiz
+    const quiz = $('cy-quiz');
+    quiz.replaceChildren();
+    if (qd.status !== 'ok') {
+      const box = el('div', 'cy-empty');
+      if (qd.status === 'error') box.append(el('span', 'cy-dot'), el('span', '', 'Failed to load'));
+      else box.classList.add('dash-skeleton');
+      quiz.append(box);
+      current = { set: [], byId };
+      return;
+    }
+    let base = rows.filter((r) => (filter === 'all' || r.section === filter) && (level === 'all' || r.level === level));
+    if (shuffle) base = shuffled(base, seed ^ hash(filter + level));
+    const set = retryIds ? retryIds.map((id) => byId.get(id)).filter(Boolean) : base;
+    current = { set, byId };
+    if (idx > set.length) idx = set.length;
+    const answeredInSet = set.filter((q) => answers[String(q.id)]).length;
+    $('cy-takeaway').textContent = 'The Digital Fortress — ' + (retryIds ? 'practising wrong ones' : (filter === 'all' ? 'all sections' : filter) + ' · ' + (level === 'all' ? 'all levels' : level));
+    if (!set.length) {
+      const box = el('div', 'cy-empty');
+      box.append(el('span', '', 'No questions match this section and level. Choose another level.'));
+      quiz.append(box);
+      return;
+    }
+
+    if (idx === set.length) { quiz.style.setProperty('--pc', 'var(--c7)'); renderResult(quiz, set); return; }
+
+    const q = set[idx];
+    const id = String(q.id);
+    const where = 'id=' + enc(id);
+    const a = answers[id];
+    const done = !!a;
+    quiz.style.setProperty('--pc', topicColor(q.topic));
+
+    const top = el('div', 'cy-quiz-top');
+    top.append(el('span', 'cy-count', 'Question ' + (idx + 1) + ' of ' + set.length));
+    const tags = el('span', 'cy-tags');
+    const tag = el('span', 'cy-tag');
+    tag.append(el('span', '', EMOJI[q.topic] || ''), mark(el('span', '', q.section), 'questions', 'section', where));
+    const pg = el('span', '');
+    pg.append(document.createTextNode('📄 PDF page '), mark(el('span', '', String(q.page)), 'questions', 'page', where));
+    const lt = el('span', 'cy-lvl-tag');
+    lt.append(el('span', '', (LEVEL[q.level] || {}).icon || ''), mark(el('span', '', q.level), 'questions', 'level', where));
+    tags.append(tag, lt, pg);
+    top.append(tags);
+
+    const bar = el('div', 'cy-bar');
+    const fill = el('div', 'cy-bar-fill');
+    fill.style.width = (set.length ? (answeredInSet / set.length) * 100 : 0) + '%';
+    bar.append(fill);
+
+    const body = el('div', 'cy-quiz-body');
+    body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = 'var(--cds-gap-md)';
+    const key = id + (retryIds ? '-r' : '');
+    if (key === lastKey) body.style.animation = 'none';
+    lastKey = key;
+
+    body.append(mark(el('p', 'cy-question', q.question), 'questions', 'question', where));
+    const options = shuffled(String(q.options).split('|'), seed ^ hash(id));
+    const opts = el('div', 'cy-opts');
+    const letters = ['A', 'B', 'C', 'D'];
+    const optColors = ['var(--c1)', 'var(--c3)', 'var(--c5)', 'var(--c2)'];
+    options.slice(0, 4).forEach((o, i) => {
+      const b = el('button', 'cy-opt');
+      b.type = 'button'; b.dataset.v = o;
+      b.style.setProperty('--oc', optColors[i]);
+      b.append(el('span', 'cy-key', letters[i]), el('span', '', o));
+      if (done) { b.disabled = true; if (o === q.answer) b.classList.add('is-correct'); else if (o === a.v) b.classList.add('is-picked-wrong'); }
+      opts.append(b);
+    });
+    body.append(opts);
+
+    if (!done && hints[id] && q.hint) {
+      const box = el('div', 'cy-hint');
+      const p = el('p', '');
+      p.append(document.createTextNode('💡 '), mark(el('span', '', q.hint), 'questions', 'hint', where));
+      box.append(p);
+      body.append(box);
+    }
+
+    if (done) {
+      const right = isRight(q, a);
+      const fb = el('div', 'cy-feedback ' + (right ? 'ok' : 'bad'));
+      const v = el('p', 'cy-verdict');
+      if (right) v.textContent = '🎉 Correct!';
+      else v.append(document.createTextNode('❌ Wrong — Correct answer: '), mark(el('span', '', q.answer), 'questions', 'answer', where));
+      fb.append(v, mark(el('p', 'cy-ex', q.explanation), 'questions', 'explanation', where));
+      body.append(fb);
+    }
+
+    const nav = el('div', 'cy-nav');
+    const prev = btn('← Previous', '', 'prev');
+    prev.disabled = idx === 0;
+    const mid = el('div', '');
+    mid.style.display = 'flex'; mid.style.gap = 'var(--cds-gap-sm)'; mid.style.alignItems = 'center'; mid.style.flexWrap = 'wrap';
+    if (!done) mid.append(btn(hints[id] ? 'Hide hint' : '💡 Hint', 'soft', 'hint'));
+    mid.append(el('span', 'cy-keys', 'Keys: A–D or 1–4 · →'));
+    const last = idx === set.length - 1;
+    nav.append(prev, mid, btn(!done ? 'Skip →' : (last ? 'See result 🏁' : 'Next →'), done ? 'primary' : '', 'next'));
+    quiz.append(top, bar, body, nav);
+
+    if (done && isRight(q, a) && burstFor === id) {
+      burstFor = '';
+      const burst = el('div', 'cy-burst');
+      burst.setAttribute('aria-hidden', 'true');
+      ['🎉', '🛡️', '✨', '🔐', '⭐', '🌟', '🎊', '✨', '🔒', '🎉'].forEach((b, i, arr) => {
+        const s = el('span', '', b);
+        const ang = (i / arr.length) * Math.PI * 2;
+        s.style.setProperty('--dx', Math.round(Math.cos(ang) * 160) + 'px');
+        s.style.setProperty('--dy', Math.round(Math.sin(ang) * 110) + 'px');
+        burst.append(s);
+      });
+      quiz.append(burst);
+    }
+  }
+
+  function renderResult(quiz, set) {
+    const ids = set.map((q) => String(q.id));
+    const okIds = ids.filter((id) => isRight(current.byId.get(id), answers[id]));
+    const ansIds = ids.filter((id) => answers[id]);
+    const wrong = ansIds.length - okIds.length;
+    const skipped = ids.length - ansIds.length;
+    const pct = set.length ? okIds.length / set.length : 0;
+    const body = el('div', 'cy-quiz-body');
+    body.style.display = 'flex'; body.style.flexDirection = 'column'; body.style.gap = 'var(--cds-gap-md)';
+    lastKey = 'result';
+    const badge = pct >= 0.8 ? '🛡️ Cyber Defender' : (pct >= 0.5 ? '👍 Good effort' : '📚 Keep practising');
+    body.append(el('h2', 'cy-section-title', '🏁 Quiz complete!'),
+      el('span', 'cy-badge', badge),
+      el('p', 'cy-result-num', okIds.length + ' / ' + set.length + ' correct'),
+      el('p', 'cy-muted', d3.format('.1~%')(pct) + ' score · ' + wrong + ' wrong · ' + skipped + ' skipped'));
+    const groups = d3.groups(set, (q) => q.section);
+    if (groups.length > 1) {
+      const bd = el('div', 'cy-breakdown');
+      groups.forEach(([section, qs]) => {
+        const r = el('div', 'cy-bd cy-tint');
+        r.style.setProperty('--pc', topicColor(qs[0].topic));
+        const good = qs.filter((q) => isRight(q, answers[String(q.id)])).length;
+        const row = el('div', 'cy-bd-row');
+        row.append(el('span', '', (EMOJI[qs[0].topic] || '') + ' ' + section), el('span', '', good + ' / ' + qs.length));
+        const barBox = el('div', 'cy-bd-bar');
+        const barFill = el('div', '');
+        barFill.style.width = (qs.length ? (good / qs.length) * 100 : 0) + '%';
+        barBox.append(barFill);
+        r.append(row, barBox);
+        bd.append(r);
+      });
+      body.append(bd);
+    }
+    const missed = set.filter((q) => !isRight(q, answers[String(q.id)]));
+    if (missed.length) {
+      body.append(el('h3', 'cy-section-title', '📝 Review your mistakes (' + missed.length + ')'));
+      const list = el('div', 'cy-review');
+      missed.forEach((q) => {
+        const where = 'id=' + enc(String(q.id));
+        const item = el('div', 'cy-review-item');
+        item.style.setProperty('--pc', topicColor(q.topic));
+        const mine = answers[String(q.id)];
+        const l1 = el('p', 'cy-review-line');
+        l1.append(document.createTextNode('Your answer: '), el('span', 'bad', mine ? mine.v : 'Skipped'));
+        const l2 = el('p', 'cy-review-line');
+        l2.append(document.createTextNode('Correct answer: '), mark(el('span', 'ok', q.answer), 'questions', 'answer', where));
+        item.append(mark(el('p', 'cy-review-q', q.question), 'questions', 'question', where), l1, l2,
+          mark(el('p', 'cy-review-line', q.explanation), 'questions', 'explanation', where));
+        list.append(item);
+      });
+      body.append(list);
+    }
+    const nav = el('div', 'cy-nav');
+    const left = el('div', '');
+    left.style.display = 'flex'; left.style.gap = 'var(--cds-gap-sm)'; left.style.flexWrap = 'wrap';
+    left.append(btn('← Review', '', 'review'), btn('🔄 Start again', '', 'restart'));
+    const shareText = 'Cybersecurity Quiz result\nName: ' + (studentName || '(no name)') + '\nScore: ' + okIds.length + ' / ' + set.length + ' (' + d3.format('.1~%')(pct) + ')\nWrong: ' + wrong + ' · Skipped: ' + skipped + '\nSection: ' + (filter === 'all' ? 'All sections' : filter) + ' · Level: ' + (level === 'all' ? 'All levels' : level);
+    const share = el('div', 'cy-share');
+    if (!studentName) share.append(el('p', 'cy-muted', '✏️ Type your name at the top before sending your result.'));
+    const wa = el('a', 'cy-btn primary cy-wa', '📤 Send result on WhatsApp');
+    wa.href = 'https://wa.me/?text=' + encodeURIComponent(shareText); wa.target = '_blank'; wa.rel = 'noopener';
+    const cp = btn('📋 Copy result', '', 'copy');
+    cp.dataset.text = shareText;
+    share.append(wa, cp);
+    body.append(share);
+    const retry = btn('Practise wrong ones', 'primary', 'retry');
+    retry.disabled = wrong + skipped === 0;
+    nav.append(left, retry);
+    body.append(nav);
+    quiz.append(body);
+  }
+
+  function choose(v) {
+    const q = current.set[idx];
+    if (!q) return;
+    const id = String(q.id);
+    if (!answers[id]) { answers[id] = { v: v }; burstFor = id; save(); render(); }
+  }
+  function go(action) {
+    const n = current.set.length;
+    if (action === 'next' && idx < n) idx += 1;
+    else if (action === 'prev' && idx > 0) idx -= 1;
+    else if (action === 'review') idx = 0;
+    else if (action === 'hint') { const q = current.set[idx]; if (q) hints[String(q.id)] = !hints[String(q.id)]; render(); return; }
+    else if (action === 'restart') { current.set.forEach((q) => { delete answers[String(q.id)]; delete hints[String(q.id)]; }); retryIds = null; idx = 0; seed = (seed * 7 + 3) % 100000; }
+    else if (action === 'retry') {
+      const ids = current.set.map((q) => String(q.id)).filter((id) => !isRight(current.byId.get(id), answers[id]));
+      ids.forEach((id) => { delete answers[id]; delete hints[id]; });
+      retryIds = ids; idx = 0;
+    }
+    save();
+    render();
+    const box = $('cy-quiz');
+    if (box && box.getBoundingClientRect().top < 0) box.scrollIntoView({ block: 'start' });
+  }
+
+  page.addEventListener('click', (e) => {
+    const opt = e.target.closest('.cy-opt');
+    if (opt) { if (!opt.disabled) choose(opt.dataset.v); return; }
+    const lvl = e.target.closest('.cy-lvl');
+    if (lvl) { level = lvl.dataset.level; retryIds = null; idx = 0; render(); return; }
+    const chip = e.target.closest('.cy-chip');
+    if (chip) { filter = chip.dataset.section; retryIds = null; idx = 0; render(); return; }
+    if (e.target.closest('#cy-shuffle')) { shuffle = !shuffle; seed = (seed * 31 + 17) % 100000; idx = 0; retryIds = null; render(); return; }
+    const b = e.target.closest('.cy-btn');
+    if (b && b.dataset.action === 'copy') {
+      const t = b.dataset.text || '';
+      const done = () => { b.textContent = '✅ Copied!'; };
+      try { navigator.clipboard.writeText(t).then(done, () => { window.prompt('Copy your result:', t); }); } catch (err) { window.prompt('Copy your result:', t); }
+      return;
+    }
+    if (b && b.tagName === 'A') return;
+    if (b && !b.disabled) go(b.dataset.action);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.body.contains(page)) return;
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const q = current.set[idx];
+    const keyMap = { '1': 0, '2': 1, '3': 2, '4': 3, a: 0, b: 1, c: 2, d: 3 };
+    const pick = keyMap[String(e.key).toLowerCase()];
+    if (q && pick !== undefined) {
+      const b = document.querySelectorAll('.cy-opt')[pick];
+      if (b && !b.disabled) choose(b.dataset.v);
+    } else if (e.key === 'ArrowRight' || (e.key === 'Enter' && q && answers[String(q.id)])) {
+      if (idx < current.set.length) go('next');
+    } else if (e.key === 'ArrowLeft') {
+      go('prev');
+    }
+  });
+
+  const nameInput = document.getElementById('cy-name');
+  nameInput.value = studentName;
+  nameInput.addEventListener('input', () => { studentName = nameInput.value.trim(); save(); if (document.querySelector('.cy-share')) render(); });
+  dash.onData(render);
+})();
+</script>
+</body>
+</html>

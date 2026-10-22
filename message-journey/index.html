@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="hi-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Message Journey · How "Hi" travels across the internet</title>
+<meta name="description" content="A 3D networking game: follow one WhatsApp &quot;Hi&quot; from Henna's phone to Riya's, through Wi-Fi, DHCP, DNS, TCP, end-to-end encryption, OSI layers, NAT, BGP, data center security and back. Hinglish and English.">
+<meta name="author" content="Henna Shakil">
+<meta name="theme-color" content="#05070f">
+<meta property="og:title" content="Message Journey">
+<meta property="og:description" content="A 3D networking game: follow one WhatsApp &quot;Hi&quot; from Henna's phone to Riya's, through Wi-Fi, DHCP, DNS, TCP, end-to-end encryption, OSI layers, NAT, BGP, data center security and back. Hinglish and English.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://hennashakil.github.io/message-journey/">
+<link rel="canonical" href="https://hennashakil.github.io/message-journey/">
+<link rel="preload" href="fonts/figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/oxanium-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="labels"></div>
+
+<div class="hud topbar">
+  <div class="brand">
+    <div class="name">MESSAGE <span>JOURNEY</span></div>
+    <div class="by">How "Hi" travels across the internet · by Henna Shakil</div>
+  </div>
+  <div class="osi" id="osi" aria-label="OSI layers in use">
+    <div class="h">OSI</div>
+  </div>
+  <div id="xpPill">XP 0</div>
+</div>
+
+<div id="hint">Drag to look around · scroll to zoom</div>
+<aside class="hud" id="recap" hidden aria-live="polite">
+  <div class="th" id="recapTitle">Timeline</div>
+  <div id="recapRows"></div>
+  <div class="rt" id="recapFoot"></div>
+</aside>
+<aside class="hud" id="trace" hidden aria-live="polite">
+  <div class="th">traceroute g.whatsapp.net</div>
+  <div class="tr head"><span>#</span><span>Address</span><span>Who</span><span>Time</span></div>
+  <div id="traceRows"></div>
+</aside>
+
+<aside class="hud" id="inspector" aria-live="polite">
+  <div class="h">Packet inspector</div>
+  <div class="pname"><span class="dot" id="iDot"></span><span id="iName">Beacon</span></div>
+  <dl id="iRows"></dl>
+  <div class="note" id="iNote"></div>
+  <div class="more" id="iMore">Tap for packet details ▾</div>
+</aside>
+
+<section class="hud" id="story">
+  <div class="shead">
+    <div class="scene-name" id="sceneName">Scene 1 of 12 · Getting online</div>
+    <div class="track" id="track" aria-label="Journey progress"></div>
+  </div>
+  <div id="beatTitle">Phone abhi offline hai</div>
+  <div id="beatText"></div>
+  <button id="moreBtn" type="button" hidden>Aur padho ▾</button>
+  <div id="chal" hidden>
+    <div class="chead"><span id="chalHead">Challenge</span><button id="chalSkip" type="button">Skip</button></div>
+    <div class="copts" id="chalOpts"></div>
+    <div class="cmsg" id="chalMsg" aria-live="polite"></div>
+  </div>
+  <div class="controls">
+    <div class="steps" id="steps"></div>
+    <div class="btns">
+      <button class="btn" id="backBtn" type="button" aria-label="Back"><span class="ico" aria-hidden="true">◀</span><span class="txt">Back</span></button>
+      <button class="btn" id="replayBtn" type="button" aria-label="Replay"><span class="ico" aria-hidden="true">↻</span><span class="txt">Replay</span></button>
+      <button class="btn" id="viewBtn" type="button" aria-label="Reset view"><span class="ico" aria-hidden="true">⌖</span><span class="txt">Reset view</span></button>
+      <button class="btn" id="autoBtn" type="button" aria-pressed="false" aria-label="Auto play"><span class="ico" aria-hidden="true">⏵⏵</span><span class="txt">Auto play</span></button>
+      <button class="btn" id="langBtn" type="button" aria-label="Language"><span class="ico" aria-hidden="true">A</span><span class="txt">English</span></button>
+      <button class="btn" id="soundBtn" type="button" aria-pressed="true" aria-label="Sound"><span class="ico" aria-hidden="true">♪</span><span class="txt">Sound on</span></button>
+      <button class="btn primary" id="nextBtn" type="button"><span class="txt">Next</span><span class="ico" aria-hidden="true"> ▶</span></button>
+    </div>
+  </div>
+</section>
+
+<div id="sceneCard" aria-hidden="true"><div class="sc"><div class="n" id="scN">Scene 2 of 12</div><div class="t" id="scT">DNS</div><div class="h" id="scH"></div></div></div>
+
+<div id="welcome">
+  <div class="wcard" role="dialog" aria-label="Message Journey">
+    <div class="wkicker" id="wKicker">A 3D networking game</div>
+    <h1>MESSAGE <span>JOURNEY</span></h1>
+    <p class="wsub" id="wSub"></p>
+    <div class="wlang" role="group" aria-label="Language">
+      <button type="button" data-lang="hi" aria-pressed="true">Hinglish</button>
+      <button type="button" data-lang="en" aria-pressed="false">English</button>
+    </div>
+    <div class="wbtns">
+      <button class="btn primary" id="wStart" type="button">Start journey</button>
+      <button class="btn" id="wResume" type="button" hidden>Continue</button>
+    </div>
+    <div class="wstars" id="wStars"></div>
+    <p class="wby">Built by <b>Henna Shakil</b> · <a href="https://github.com/Hennashakil" target="_blank" rel="noopener">github.com/Hennashakil</a></p>
+  </div>
+</div>
+
+<div id="quiz" hidden>
+  <div class="qcard" role="dialog" aria-label="Scene quiz">
+    <div id="qBody">
+      <div class="qtop"><span id="qNum">Question 1 of 4</span><span id="qXp">+10 XP</span></div>
+      <div id="qText" style="margin-top:12px"></div>
+      <div class="opts" id="qOpts" style="margin-top:14px"></div>
+      <div id="qWhy" style="margin-top:12px" hidden></div>
+      <div class="qfoot" style="margin-top:14px"><button class="btn primary" id="qNext" type="button" hidden>Next question</button></div>
+    </div>
+    <div class="qend" id="qEnd" hidden>
+      <div class="qtop" style="width:100%"><span id="qEndScene">Scene 1 complete</span><span id="qEndName">Getting online</span></div>
+      <div class="qstars" id="qStars" aria-label=""></div>
+      <div class="big" id="qScore">40 XP</div>
+      <div class="qtime" id="qTime"></div>
+      <p id="qMsg"></p>
+      <p id="qNextStop"></p>
+      <div class="btns" style="justify-content:center">
+        <button class="btn" id="qRetry" type="button">Watch again</button>
+        <button class="btn" id="qClose" type="button">Explore</button>
+        <button class="btn primary" id="qGo" type="button">Next scene</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+<script src="js/i18n-en.js"></script>
+<script src="js/world.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/story.js"></script>
+<script src="js/play.js"></script>
+</body>
+</html>
